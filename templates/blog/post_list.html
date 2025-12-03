@@ -1,0 +1,58 @@
+{% extends 'blog/base.html' %}
+{% block title %}Home - My Blog{% endblock %}
+
+{% block content %}
+<h1 class="mb-4 text-center">Latest Posts</h1>
+
+{% if posts %}
+<div class="row">
+    {% for post in posts %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100 shadow-sm">
+            {% if post.image %}
+                <img src="{{ post.image.url }}" class="card-img-top post-img" alt="{{ post.title }}">
+            {% else %}
+                <div class="bg-secondary text-white d-flex align-items-center justify-content-center post-img">
+                    <h3>No Image</h3>
+                </div>
+            {% endif %}
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title">
+                    <a href="{{ post.get_absolute_url }}" class="text-decoration-none">{{ post.title }}</a>
+                </h5>
+                <p class="text-muted small">
+                    {{ post.published_at|date:"F d, Y" }} 
+                    {% if post.category %} • {{ post.category }}{% endif %}
+                </p>
+                <p class="card-text flex-grow-1">
+                    {{ post.content|safe|truncatewords_html:30 }}
+                </p>
+                <a href="{{ post.get_absolute_url }}" class="btn btn-primary mt-3">Read More →</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Pagination -->
+{% if is_paginated %}
+<nav class="mt-5">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">« Previous</a></li>
+        {% endif %}
+        <li class="page-item disabled"><span class="page-link">Page {{ page_obj.number }} of {{ paginator.num_pages }}</span></li>
+        {% if page_obj.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next »</a></li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+{% else %}
+<div class="alert alert-info text-center">
+    <h3>No published posts yet!</h3>
+    <p>Go to <a href="/admin/">admin</a> → create some posts and check "Is published"</p>
+</div>
+{% endif %}
+{% endblock %}
